@@ -32,6 +32,7 @@ def generate_reports(report_id, reports_folder, temps_folder, temp_file, data=No
                 rep_gen = ReportGenerator(reports_folder=reports_folder,
                                           temps_folder=temps_folder,
                                           data=json.loads(db_report.content) if not data else data)
+                from src import data_converter
                 rep_gen.filename = join(reports_folder, str(report_id))
                 rep_gen.run(temp_file)
                 filename = rep_gen.filename

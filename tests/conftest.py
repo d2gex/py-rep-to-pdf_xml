@@ -1,5 +1,4 @@
 import pytest
-import shutil
 
 from src import config
 from src.app import create_app
@@ -25,3 +24,9 @@ def reset_database():
     '''Reset the database before any test is run
     '''
     yield
+
+
+@pytest.fixture
+def reports_app():
+    app = create_app(config_class=TestConfig)
+    return app.test_client(use_cookies=True)

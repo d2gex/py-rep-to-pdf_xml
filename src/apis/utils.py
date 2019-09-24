@@ -1,4 +1,4 @@
-RESPONSE_201 = "A new object has been created. Uri: {description}"
+RESPONSE_201 = {'xml_url': 'xml report url', 'pdf_url': "pdf report url", 'report_id': 'report ID'}
 RESPONSE_400 = "Invalid received data: {description}"
 RESPONSE_404 = "The required object has not been found. Please see error description: {description}"
 RESPONSE_409 = "An error while processing the request occurred. Please see error description: {description}"

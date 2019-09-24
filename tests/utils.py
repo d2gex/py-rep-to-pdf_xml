@@ -75,3 +75,21 @@ def fill_db_with_test_data():
         content='{invalid_json'
     ))
     db.session.commit()
+
+
+def get_db_report_for_test():
+    fill_db_with_test_data()
+    db_data = db.session.query(models.Reports).all()
+    for report in db_data:
+        if 'Dunder Mifflin' in report.content:
+            break
+    return report
+
+
+def toggle_processing_flag(report):
+
+    report.processing = 1 if not report.processing else 0
+    db.session.add(report)
+    db.session.commit()
+    db_report = db.session.query(models.Reports).filter_by(id=report.id).one()
+    return db_report
