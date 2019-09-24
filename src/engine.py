@@ -1,3 +1,4 @@
+from os.path import join
 from sqlalchemy.orm.exc import NoResultFound
 from src import models
 from src.report_generator import ReportGenerator
@@ -27,6 +28,7 @@ def generate_reports(report_id, reports_folder, temps_folder, temp_file, data):
             # ... Do we need to generate a new report?
             if not db_report.pdf_path:
                 rep_gen = ReportGenerator(reports_folder=reports_folder, temps_folder=temps_folder, data=data)
+                rep_gen.filename = join(reports_folder, str(report_id))
                 rep_gen.run(temp_file)
                 filename = rep_gen.filename
                 db.session.\

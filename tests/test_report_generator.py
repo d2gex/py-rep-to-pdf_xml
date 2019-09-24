@@ -1,6 +1,7 @@
 import pytest
+import uuid
 
-from os.path import exists
+from os.path import exists, join
 from src.report_generator import ReportGenerator
 from tests import utils as test_utils
 
@@ -9,7 +10,9 @@ from tests import utils as test_utils
 def rep_gen(tmp_path):
     temp_reports = tmp_path / 'reports'
     temp_reports.mkdir()
-    return ReportGenerator(reports_folder=temp_reports, temps_folder=test_utils.TEMPLATE_FOLDER, data=test_utils.data)
+    _rep_gen=ReportGenerator(reports_folder=temp_reports, temps_folder=test_utils.TEMPLATE_FOLDER, data=test_utils.data)
+    _rep_gen.filename = join(temp_reports, str(uuid.uuid4()).replace('-', ''))
+    return _rep_gen
 
 
 def test_to_pdf(rep_gen, tmp_path):

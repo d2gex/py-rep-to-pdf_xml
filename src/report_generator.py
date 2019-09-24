@@ -1,6 +1,5 @@
 import multiprocessing
 import json
-import uuid
 
 from os.path import join
 from src.data_converter import HTMLToPDF, JSONToXML
@@ -13,11 +12,15 @@ class ReportGenerator:
         self.temps_folder = temps_folder
         self.raw_obj = data
         self.json_obj = json.dumps(data)
-        self._filename = join(reports_folder, str(uuid.uuid4()).replace('-', ''))
+        self._filename = None
 
     @property
     def filename(self):
         return self._filename
+
+    @filename.setter
+    def filename(self, filename):
+        self._filename = filename
 
     def to_pdf(self, temp_file):
         '''It generates a PDF report and store it on the filesystem
