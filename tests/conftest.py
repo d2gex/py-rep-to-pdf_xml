@@ -17,3 +17,11 @@ def app_context():
     app = create_app(config_class=TestConfig)
     with app.app_context():
         yield
+
+
+@pytest.fixture(autouse=True)
+@test_utils.reset_database(tear='up')
+def reset_database():
+    '''Reset the database before any test is run
+    '''
+    yield

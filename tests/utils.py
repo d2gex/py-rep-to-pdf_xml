@@ -37,3 +37,24 @@ def reset_database(tear='up', tables=None):
             return ret
         return wrapper
     return decorator
+
+
+def fill_db_with_test_data():
+    '''It will fill up the database with data useful for testing
+    '''
+    db.session.add(models.Reports(
+        content='{"organization":"Dunder Mifflin","reported_at":"2015-04-21","created_at":"2015-04-22",'
+                '"inventory":[{"name":"paper","price":"2.00"},{"name":"stapler","price":"5.00"}]}'
+    ))
+    db.session.add(models.Reports(
+        content='{"organization":"MOM Corp.","reported_at":"3015-08-24","created_at":"3015-08-23",'
+                '"inventory":[{"name":"bending unit","price":"2000.00"},{"name":"stapling unit","price":"50.00"}]}'
+    ))
+    db.session.add(models.Reports(
+        content='{"organization":"Flowers Inc.","reported_at":"2017-11-19","created_at":"2017-11-23",'
+                '"inventory":[{"name":"Flower pot","price":"2.00"},{"name":"Roses, 24","price":"50.00"}]}'
+    ))
+    db.session.add(models.Reports(
+        content='{invalid_json'
+    ))
+    db.session.commit()
