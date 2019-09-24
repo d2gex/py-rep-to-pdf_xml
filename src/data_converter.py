@@ -19,9 +19,9 @@ class HTMLToPDF(Converter):
     '''Converts HTML content into PDF
     '''
 
-    def __init__(self, temp_source):
-        self.source = temp_source
-        self.temp_loader = FileSystemLoader(temp_source)
+    def __init__(self, temps_folder):
+        self.temps_folder = temps_folder
+        self.temp_loader = FileSystemLoader(temps_folder)
         self.temp_env = Environment(loader=self.temp_loader)
 
     def render(self, temp_file, data):
