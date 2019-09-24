@@ -10,6 +10,23 @@ path = Path(__file__).resolve()
 ROOT = path.parents[1]
 TEST = join(ROOT, 'tests')
 
+TEMPLATE_FOLDER = join(TEST, 'stubs')
+TEMPLATE_FILE = 'temp_1.html'
+data = {
+        'organisation': 'Lorem Ipsum Ltd',
+        'reported_at': "2015-04-21",
+        'inventory': [
+            {
+                'name': 'A',
+                'price': 5.0
+            },
+            {
+                'name': 'B',
+                'price': 7.0
+            }
+        ]
+    }
+
 table_names = [models.Reports]
 
 

@@ -3,28 +3,12 @@ import json
 
 from os.path import join
 from src.data_converter import HTMLToPDF, JSONToXML
-from tests.utils import TEST
+from tests.utils import TEST, data
 
 
 @pytest.fixture(scope='module')
 def html_to_pdf():
     return HTMLToPDF(join(TEST, 'stubs'))
-
-
-data = {
-        'organisation': 'Lorem Ipsum Ltd',
-        'reported_at': "2015-04-21",
-        'inventory': [
-            {
-                'name': 'A',
-                'price': 5.0
-            },
-            {
-                'name': 'B',
-                'price': 7.0
-            }
-        ]
-    }
 
 
 def test_template_renders_ok(html_to_pdf):
