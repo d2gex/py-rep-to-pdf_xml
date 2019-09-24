@@ -4,7 +4,7 @@ from src.apis import errors as api_errors
 from src.apis.namespaces import reports
 
 
-api_v1 = Blueprint('apis', __name__)
+api_v1 = Blueprint('apis', __name__, static_folder='../static/apis/reports')
 api = Api(api_v1,
           title="Authorisation Server Api",
           version="0.1.0",

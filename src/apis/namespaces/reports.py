@@ -1,8 +1,9 @@
 import json
 
 from os.path import join
-from flask import request
+from flask import request, make_response, send_from_directory
 from flask_restplus import Resource, fields
+from werkzeug.exceptions import NotFound
 from src import config
 from src.apis import utils as api_utils, errors as api_errors
 from src.apis.namespace import NameSpace
@@ -67,21 +68,30 @@ class ReportGenerator(Resource):
         return response, 201
 
 
+class ReportProviderMixin(Resource):
+
+    @staticmethod
+    def deliver_report(report_id, file_format='pdf'):
+        try:
+            return send_from_directory(REPORTS_FOLDER, filename=f'{report_id}.{file_format}')
+        except NotFound:
+            raise api_errors.BadRequest400Error(message="Report '{report_id}' has not yet been generated",
+                                                envelop=api_utils.RESPONSE_404)
+
+
 @api.route('/xml/<int:report_id>')
 @api.response_error(api_errors.Server500Error(message=api_utils.RESPONSE_500))
-class XMLReportProvider(Resource):
+class XMLReportProvider(ReportProviderMixin):
 
-    @api.marshal_with(report_location_dto, description='An object such the structure below will be returned')
     @api.response_error(api_errors.NotFound404Error(message=api_utils.RESPONSE_404))
     def get(self, report_id):
-        pass
+        return self.deliver_report(report_id, file_format='xml')
 
 
 @api.route('/pdf/<int:report_id>')
 @api.response_error(api_errors.Server500Error(message=api_utils.RESPONSE_500))
-class PDFReportProvider(Resource):
+class PDFReportProvider(ReportProviderMixin):
 
-    @api.marshal_with(report_location_dto, description='An object such the structure below will be returned')
     @api.response_error(api_errors.NotFound404Error(message=api_utils.RESPONSE_404))
     def get(self, report_id):
-        pass
+        return self.deliver_report(report_id)
