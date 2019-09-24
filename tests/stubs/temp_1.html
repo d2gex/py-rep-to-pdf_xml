@@ -1,0 +1,15 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Template 1</title>
+</head>
+<body>
+<h3>Inventory for organisation "{{ organisation }}"</h3>
+<ul>
+    {% for item in inventory %}
+        <li><strong>{{item['name']}}:</strong> {{item['price']}}</li>
+    {% endfor %}
+</ul>
+<p>reported_at: {{ reported_at }}</p>
+</body>
+</html>
