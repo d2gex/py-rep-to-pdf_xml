@@ -1,4 +1,6 @@
+import json
 
+from os.path import join
 from src import models
 from src.app import db
 from src.engine import generate_reports
@@ -51,7 +53,8 @@ def test_generate_reports_processing_status():
 
 
 def test_generate_reports_from_scratch(tmp_path):
-    '''Ensure that if no reports have been generated yet, then they are generated and the filename returned
+    '''Ensure that if no reports have been generated yet, then they are generated and the filename returned.
+    The content of the report is provided
     '''
     db_report = get_db_report_for_test()
     reports_folder = tmp_path / "reports"
@@ -75,7 +78,8 @@ def test_generate_reports_from_scratch(tmp_path):
 
 
 def test_generate_reports_from_existing():
-    '''Ensure that if the report has been generated, then the filename is returned
+    '''Ensure that if the report has been generated, then the filename is returned. The content
+    of the report is provided.
     '''
 
     db_report = get_db_report_for_test()
@@ -99,3 +103,31 @@ def test_generate_reports_from_existing():
     assert xml_path == filename
     assert xml_ext == 'xml'
     assert pdf_ext == 'pdf'
+
+
+def test_generate_report_from_scratch_no_data_provided(tmp_path):
+    '''Unless the other tests above this test will ensure that the content of the report is actually
+    picked from the database instead of provided.
+    '''
+    db_report = get_db_report_for_test()
+    reports_folder = tmp_path / "reports"
+    reports_folder.mkdir()
+
+    db.session. \
+        query(models.Reports). \
+        filter_by(id=db_report.id). \
+        update({'content': json.dumps(test_utils.data)})
+
+    ret = generate_reports(db_report.id,
+                           reports_folder=reports_folder,
+                           temps_folder=test_utils.TEMPLATE_FOLDER,
+                           temp_file=test_utils.TEMPLATE_FILE)
+
+    assert ret['code'] == 301
+    assert ret['msg'] == f"Report {db_report.id} has just been generated"
+    assert ret['filename']
+    with open(join(reports_folder, f"{ret['filename']}.xml")) as fh:
+        data = fh.read()
+
+    # Organisation should be the same as the one persisted in the database which is test_utils.data
+    assert test_utils.data['organisation'] in data

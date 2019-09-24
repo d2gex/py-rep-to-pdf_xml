@@ -1,3 +1,5 @@
+import json
+
 from os.path import join
 from sqlalchemy.orm.exc import NoResultFound
 from src import models
@@ -5,7 +7,7 @@ from src.report_generator import ReportGenerator
 from src.app import db
 
 
-def generate_reports(report_id, reports_folder, temps_folder, temp_file, data):
+def generate_reports(report_id, reports_folder, temps_folder, temp_file, data=None):
     '''Given a report ID and format it returns a report
     '''
 
@@ -27,7 +29,9 @@ def generate_reports(report_id, reports_folder, temps_folder, temp_file, data):
             code = 301
             # ... Do we need to generate a new report?
             if not db_report.pdf_path:
-                rep_gen = ReportGenerator(reports_folder=reports_folder, temps_folder=temps_folder, data=data)
+                rep_gen = ReportGenerator(reports_folder=reports_folder,
+                                          temps_folder=temps_folder,
+                                          data=json.loads(db_report.content) if not data else data)
                 rep_gen.filename = join(reports_folder, str(report_id))
                 rep_gen.run(temp_file)
                 filename = rep_gen.filename
