@@ -17,3 +17,4 @@ class Config:
                               f"{os.getenv('DB_PASSWORD')}@" \
                               f"{os.getenv('DB_HOST')}/" \
                               f"{os.getenv('DB')}"
+    RESTPLUS_MASK_SWAGGER = False  # Do not show X-FIELDS in swagger

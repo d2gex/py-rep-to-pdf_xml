@@ -17,4 +17,8 @@ def create_app(config_class=config.Config):
     from src import models
     migrate.init_app(app, db)
 
+    # Add apis's blueprint
+    from src.apis.handler import api_v1
+    app.register_blueprint(api_v1, url_prefix='/api')
+
     return app
