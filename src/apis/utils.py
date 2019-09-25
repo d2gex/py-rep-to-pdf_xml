@@ -1,3 +1,4 @@
+RESPONSE_200 = "A {data_format} report is returned"
 RESPONSE_201 = {'xml_url': 'xml report url', 'pdf_url': "pdf report url", 'report_id': 'report ID'}
 RESPONSE_400 = "Invalid received data: {description}"
 RESPONSE_404 = "The required object has not been found. Please see error description: {description}"

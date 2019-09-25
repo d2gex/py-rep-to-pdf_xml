@@ -81,6 +81,7 @@ class ReportProviderMixin(Resource):
 
 @api.route('/xml/<int:report_id>')
 @api.response_error(api_errors.Server500Error(message=api_utils.RESPONSE_500))
+@api.doc(responses={200: api_utils.RESPONSE_200.replace('{data_format}', 'XML')})
 class XMLReportProvider(ReportProviderMixin):
 
     @api.response_error(api_errors.NotFound404Error(message=api_utils.RESPONSE_404))
@@ -90,6 +91,7 @@ class XMLReportProvider(ReportProviderMixin):
 
 @api.route('/pdf/<int:report_id>')
 @api.response_error(api_errors.Server500Error(message=api_utils.RESPONSE_500))
+@api.doc(responses={200: api_utils.RESPONSE_200.replace('{data_format}', 'PDF')})
 class PDFReportProvider(ReportProviderMixin):
 
     @api.response_error(api_errors.NotFound404Error(message=api_utils.RESPONSE_404))
