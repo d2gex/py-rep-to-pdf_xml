@@ -119,6 +119,7 @@ Therefore the changes on the code would be minimal.
 
 Install and Run
 ================
+The instructions provided below are only to run the application in development mode using Flask development web server.
 
 a) Clone this repo and install the requirements as follows::
 
@@ -138,15 +139,22 @@ c) You need to set up your ``.env`` file as follows:
     DB_HOST = 'your_host'
     DB_PORT = 'your_port'
 
-d) The run the database deltas as follows::
+d) Add a .flaskenv environmental file in you root folder as follows:
+
+.. code-block:: bash
+
+    FLASK_APP=src/app
+    FLASK_ENV=development
+
+e) The run the database deltas as follows::
 
     $ flask db migrate
 
-e) Run the Flask server as follows::
+f) Run the Flask server as follows::
 
     $ flask run
 
-Step *d)* will only create the underlying database structure. You will need to insert content in it as provided in
+Step *e)* will only create the underlying database structure. You will need to insert content in it as provided in
 the assignment. The difference is that the field ``type`` is now called ``content``
 
 g) Use Postman or similar services to generate a report by posting a ``report_id`` to the endpoint
