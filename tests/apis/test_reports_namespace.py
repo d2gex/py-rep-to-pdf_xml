@@ -25,7 +25,7 @@ def change_static_folder_path(tmpdir_factory):
 # create_app needs to be imported after the above scoped module generator runs and change at runtime the path
 # where to drop the report files. No pretty but necessary
 from src.app import create_app
-from tests.conftest import TestConfig
+from tests.config_test import TestConfig
 
 
 @pytest.fixture
