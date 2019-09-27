@@ -2,7 +2,7 @@
 ``py-rep-to-pdf_xml``: A flask-based Report Export Service
 =============================================================
 
-.. image:: https://img.shields.io/badge/coverage-95%25-brightgreen.svg
+.. image:: https://img.shields.io/badge/coverage-97%25-brightgreen.svg
     :target: #
 
 The Report Export Service has been implemented using Flask, Flask-Restplus, SqlAlchemy, Flask-Migrate and Alembic
@@ -28,8 +28,8 @@ would have to wait a lot should they be generated every time. To overcome this i
 have three endpoints as follows:
 
 1.  ``/reports`` and ``HTTP post``: this resource will be used to generate both the PDFs and XML reports
-2.  ``/reports/xml/<report_id>.pdf``: this resource will provide the already generated XML reports
-3.  ``/reports/xml/<report_id>.xml``: this resource will provide the already generated PDF reports
+2.  ``/reports/xml/<report_id>``: this resource will provide the already generated XML reports
+3.  ``/reports/pdf/<report_id>``: this resource will provide the already generated PDF reports
 
 When a user consuming our API visits ``/reports`` will provide an integer corresponding to the ``/report_id`` they
 want a report for. The following occurs:
@@ -42,7 +42,7 @@ want a report for. The following occurs:
 4.  If the report does exist the url of both the XML and PDF reports are returned as in step 2. The difference is that
     those reports are no longer generated.
 
-When an user comes to ``/reports/xml/<report_id>.pdf`` or ``/reports/xml/<report_id>.xml`` two responses are possible:
+When an user comes to ``/reports/xml/<report_id>`` or ``/reports/xml/<report_id>`` two responses are possible:
 
 1.  Reports are not available => 404 Not Found error is returned
 2.  Otherwise the report in question is provided.

@@ -1,6 +1,7 @@
 import pytest
 import json
 import uuid
+from os.path import join, exists
 
 from tests import utils as test_utils
 from src.apis.handler import api_v1
@@ -15,8 +16,9 @@ def change_static_folder_path(tmpdir_factory):
     location is re-established
     '''
     original_path = api_v1.static_folder
-    new_temp_path = tmpdir_factory.mktemp(TEMP_REPORTS_FOLDER)
+    new_temp_path = tmpdir_factory.mktemp(TEMP_REPORTS_FOLDER, numbered=False)
     try:
+
         api_v1.static_folder = new_temp_path
         yield
     finally:
@@ -34,7 +36,9 @@ def reports_app():
     return app.test_client(use_cookies=True)
 
 
-RESOURCE_URI = '/api/reports/'
+POST_RESOURCE_URI = '/api/reports/'
+PDF_GET_RESOURCE_URI = '/api/reports/pdf'
+XML_GET_RESOURCE_URI = '/api/reports/xml'
 
 
 def test_post_errors(reports_app):
@@ -47,14 +51,14 @@ def test_post_errors(reports_app):
     '''
 
     # (1)
-    response = reports_app.post(RESOURCE_URI, data=json.dumps([]), content_type='application/json')
+    response = reports_app.post(POST_RESOURCE_URI, data=json.dumps([]), content_type='application/json')
     assert response.status_code == 400
     ret_data = response.get_json()
     assert 400 == ret_data['error']['code']
     assert all(keyword in ret_data['error']['message'] for keyword in ('Invalid receive', 'Incorrect type'))
 
     # (2)
-    response = reports_app.post(RESOURCE_URI,
+    response = reports_app.post(POST_RESOURCE_URI,
                                 data=json.dumps({'key_out_of_scope': 'something'}),
                                 content_type='application/json')
     assert response.status_code == 400
@@ -63,7 +67,7 @@ def test_post_errors(reports_app):
     assert all(keyword in ret_data['error']['message'] for keyword in ('Invalid receive', 'Required key'))
 
     # (3)
-    response = reports_app.post(RESOURCE_URI,
+    response = reports_app.post(POST_RESOURCE_URI,
                                 data=json.dumps({'report_id': -1}),
                                 content_type='application/json')
     ret_data = response.get_json()
@@ -71,15 +75,38 @@ def test_post_errors(reports_app):
     assert all(keyword in ret_data['error']['message'] for keyword in ('object has not been found', 'report'))
 
 
-def test_post_generate_report_from_scratch(reports_app):
+def test_post_generate_report_from_scratch(reports_app, tmpdir_factory):
     '''Test than we posting to /reports and no reports exist, such reports are generated and url
     to reach them is returned
     '''
 
     db_report = test_utils.get_db_report_for_test()
-    response = reports_app.post(RESOURCE_URI,
+    response = reports_app.post(POST_RESOURCE_URI,
                                 data=json.dumps({'report_id': db_report.id}),
                                 content_type='application/json')
     ret_data = response.get_json()
     assert response.status_code == 201
     assert all(key in ('xml_url', 'pdf_url', 'report_id') and value for key, value in ret_data.items())
+    # Ensure that the report was actually generated in the temporary report folder
+    assert exists(join(tmpdir_factory.getbasetemp(),  TEMP_REPORTS_FOLDER, f'{db_report.id}.pdf'))
+
+
+def test_get_existing_pdf_report(reports_app, tmpdir_factory):
+
+    db_report = test_utils.get_db_report_for_test()
+    response = reports_app.post(POST_RESOURCE_URI,
+                                data=json.dumps({'report_id': db_report.id}),
+                                content_type='application/json')
+    ret_data = response.get_json()
+    assert response.status_code == 201
+    assert all(key in ('xml_url', 'pdf_url', 'report_id') and value for key, value in ret_data.items())
+    # Ensure that the report was actually generated in the temporary report folder
+    assert exists(join(tmpdir_factory.getbasetemp(), TEMP_REPORTS_FOLDER, f'{db_report.id}.pdf'))
+
+    response = reports_app.get(f'{PDF_GET_RESOURCE_URI}/{db_report.id}')
+    assert response.status_code == 200
+    assert response.headers['Content-Type'] == 'application/pdf'
+
+    response = reports_app.get(f'{XML_GET_RESOURCE_URI}/{db_report.id}')
+    assert response.status_code == 200
+    assert 'application/xml' in response.headers['Content-Type']
