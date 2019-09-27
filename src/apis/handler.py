@@ -1,10 +1,15 @@
+from os.path import join
 from flask import Blueprint
 from flask_restplus import Api
 from src.apis import errors as api_errors
-from src.apis.namespaces import reports
+from src import config
 
+REPORTS_FOLDER = join(config.ROOT_PATH, 'src', 'static', 'apis', 'reports')
+TEMPLATES_FOLDER = join(config.ROOT_PATH, 'src', 'templates', 'apis', 'reports')
 
-api_v1 = Blueprint('apis', __name__, static_folder='../static/apis/reports')
+api_v1 = Blueprint('apis', __name__,
+                   static_folder=REPORTS_FOLDER,
+                   template_folder=TEMPLATES_FOLDER)
 api = Api(api_v1,
           title="Authorisation Server Api",
           version="0.1.0",
@@ -26,4 +31,5 @@ def handle_error(error):
 
 
 # Add reports namespace
+from src.apis.namespaces import reports
 api.add_namespace(reports.api, '/reports')

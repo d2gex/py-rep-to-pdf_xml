@@ -1,12 +1,13 @@
 import json
 
 from os.path import join
-from flask import request, make_response, send_from_directory
+from flask import request, send_from_directory
 from flask_restplus import Resource, fields
 from werkzeug.exceptions import NotFound
 from src import config
 from src.apis import utils as api_utils, errors as api_errors
 from src.apis.namespace import NameSpace
+from src.apis.handler import api_v1
 from src.engine import generate_reports
 
 api = NameSpace('reports', description="Resource for clients to generate and return reports in either pdf or xml format")
@@ -20,8 +21,6 @@ report_location_dto = api.model('Report Location Data', {
     'pdf_url': fields.String(max_length=300, required=True, description="Absolute url where to find the pdf report"),
 })
 
-REPORTS_FOLDER = join(config.ROOT_PATH, 'src', 'static', 'apis', 'reports')
-TEMPLATES_FOLDER = join(config.ROOT_PATH, 'src', 'templates', 'apis', 'reports')
 DEFAULT_TEMPLATE_FILE = 'default.html'
 
 
@@ -50,8 +49,8 @@ class ReportGenerator(Resource):
 
         # generate_reports(report_id, reports_folder, temps_folder, temp_file, data):
         ret = generate_reports(report_id=api.payload['report_id'],
-                               reports_folder=REPORTS_FOLDER,
-                               temps_folder=TEMPLATES_FOLDER,
+                               reports_folder=api_v1.static_folder,
+                               temps_folder=api_v1.template_folder,
                                temp_file=DEFAULT_TEMPLATE_FILE)
 
         # Has the report been found?
@@ -73,7 +72,7 @@ class ReportProviderMixin(Resource):
     @staticmethod
     def deliver_report(report_id, file_format='pdf'):
         try:
-            return send_from_directory(REPORTS_FOLDER, filename=f'{report_id}.{file_format}')
+            return send_from_directory(api_v1.static_folder, filename=f'{report_id}.{file_format}')
         except NotFound:
             raise api_errors.BadRequest400Error(message="Report '{report_id}' has not yet been generated",
                                                 envelop=api_utils.RESPONSE_404)
