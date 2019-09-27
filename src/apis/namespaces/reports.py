@@ -1,10 +1,8 @@
 import json
 
-from os.path import join
 from flask import request, send_from_directory
 from flask_restplus import Resource, fields
 from werkzeug.exceptions import NotFound
-from src import config
 from src.apis import utils as api_utils, errors as api_errors
 from src.apis.namespace import NameSpace
 from src.apis.handler import api_v1

@@ -29,17 +29,22 @@ def generate_reports(report_id, reports_folder, temps_folder, temp_file, data=No
             code = 301
             # ... Do we need to generate a new report?
             if not db_report.pdf_path:
+                # Set 'processing' flag to 1 to avoid others to regenerate the reports
+                db.session. \
+                    query(models.Reports). \
+                    filter_by(id=report_id). \
+                    update({'processing': 1})
                 rep_gen = ReportGenerator(reports_folder=reports_folder,
                                           temps_folder=temps_folder,
                                           data=json.loads(db_report.content) if not data else data)
-                from src import data_converter
                 rep_gen.filename = join(reports_folder, str(report_id))
                 rep_gen.run(temp_file)
                 filename = rep_gen.filename
+                # Update paths and toggle 'processing' flag
                 db.session.\
                     query(models.Reports).\
                     filter_by(id=report_id).\
-                    update({'xml_path': f'{filename}.xml', 'pdf_path':f'{filename}.pdf'})
+                    update({'xml_path': f'{filename}.xml', 'pdf_path': f'{filename}.pdf', 'processing': 0})
                 msg = f"Report {report_id} has just been generated"
             # ... or does the report exist?
             else:
